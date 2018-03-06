@@ -19,5 +19,6 @@ install:
 uninstall:
 		@echo 'Removing files...'
 		@rm -f $(DESTDIR)$(PREFIX)/bin/osc-easy-install
+		@rm -f $(DESTDIR)$(PREFIX)/bin/osc-easy-install-askpass
 		@rm -f $(DESTDIR)$(PREFIX)/share/applications/osc-easy-install.desktop
 		@echo 'osc-easy-install uninstalled!'
