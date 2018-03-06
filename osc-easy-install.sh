@@ -49,25 +49,26 @@ if [ "$MISSING_DEPS" = "TRUE" ]; then
     exit 1
 fi
 
+# TODO set this as default entry without duplicates
 # Get openSUSE version using /etc/os-release as default selection
 # Use tr to replace spaces with underscores as used in OBS URLs
-. /etc/os-release
-case $NAME in
-    *Tumbleweed*)
-        SUSE_RELEASE="$(echo "$NAME" | tr '[:blank:]' '_')"
-        ;;
-    *)
-        SUSE_RELEASE="$(echo "$NAME" | tr '[:blank:]' '_')_$VERSION"
-        ;;
-esac
+# . /etc/os-release
+# case $NAME in
+#     *Tumbleweed*)
+#         SUSE_RELEASE="$(echo "$NAME" | tr '[:blank:]' '_')"
+#         ;;
+#     *)
+#         SUSE_RELEASE="$(echo "$NAME" | tr '[:blank:]' '_')_$VERSION"
+#         ;;
+# esac
 
-# Use zenity or qarma to provide a GUI for inputting Project name, Package, and Release
+# Use zenity or qarma to provide a GUI for inputting Package and Release
 if type wmctrl >/dev/null 2>&1; then
     (sleep 1 && wmctrl -F -a "osc-easy-install" -b add,above) &
 fi
 SEARCH_INPUT="$(zenity --forms --separator="," --title="osc-easy-install" --text="Find and install packages from the openSUSE Build Service$(echo $NEW_LINE)" \
 --window-icon="$ICON_NAME" --ok-label="Search" --add-entry="Package:" --add-combo="Release:" \
---combo-values="$SUSE_RELEASE|openSUSE_Factory|openSUSE_Tumbleweed|openSUSE_Leap_15.0|openSUSE_Leap_42.3|All")"
+--combo-values="openSUSE_Tumbleweed|openSUSE_Factory|openSUSE_Leap_15.0|openSUSE_Leap_42.3|All")"
 # Exit on cancel
 case $? in
     1)
