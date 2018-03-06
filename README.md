@@ -46,7 +46,7 @@ After a Project/Release/Package selection is made, a prompt is shown to confirm 
 
 ![screenshot3](/screenshots/screenshot3.png)
 
-If the user choses to install the selected package, `xterm` is opened (hopefully somewhere near the center of the screen), the `sudo zypper addrepo` is ran if the repository isn't already present in zypper's list, `sudo zypper refresh` is ran to make sure the repo lists are up to date, and `sudo zypper install package-version` is ran to ensure that the selected package version is installed.
+If the user choses to install the selected package, `xterm` is opened (hopefully somewhere near the center of the screen), `sudo zypper addrepo` is ran if the repository isn't already present in zypper's list, `sudo zypper refresh` is ran to make sure the repo lists are up to date, and `sudo zypper install package-version` is ran to ensure that the selected package version is installed.
 
 ![screenshot4](/screenshots/screenshot4.png)
 
