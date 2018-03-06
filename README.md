@@ -34,7 +34,7 @@ sudo make uninstall
 
 ### Before running osc-easy-install please make sure to run the `osc` command in a terminal and login.  osc-easy-install currently does not detect whether or not the user has logged in to `osc`, so please make sure to do this before running osc-easy-install.
 
-After installation, either launch osc-easy-install from your menu or run `osc-easy-install` from your terminal/launcher.  Usage should be pretty straight forward.  The first screen that shows ask for a package to search for and allows for the openSUSE release to be selected.  A search can also be ran for packages on any distribution, but it will probably not work to add repositories to zypper's list that do not match the current release.
+After installation, either launch osc-easy-install from your menu or run `osc-easy-install` from your terminal/launcher.  Usage should be pretty straight forward.  The first screen that is shown asks for a package to search for and allows for the openSUSE release to be selected.  A search can also be ran for packages on any distribution, but it will probably not work to add repositories to zypper's list that do not match the current release.
 
 ![screenshot](/screenshots/screenshot1.png)
 
