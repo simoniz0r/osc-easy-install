@@ -65,7 +65,7 @@ esac
 if type wmctrl >/dev/null 2>&1; then
     (sleep 1 && wmctrl -F -a "osc-easy-install" -b add,above) &
 fi
-SEARCH_INPUT="$(zenity --forms --separator="," --title="osc-easy-install" --text="osc-easy-install searches the openSUSE Build Service for packages matching the input below.$(echo $NEW_LINE)" \
+SEARCH_INPUT="$(zenity --forms --separator="," --title="osc-easy-install" --text="Find and install packages from the openSUSE Build Service$(echo $NEW_LINE)" \
 --window-icon="$ICON_NAME" --ok-label="Search" --add-entry="Package:" --add-combo="Release:" \
 --combo-values="$SUSE_RELEASE|openSUSE_Factory|openSUSE_Tumbleweed|openSUSE_Leap_15.0|openSUSE_Leap_42.3|All")"
 # Exit on cancel
