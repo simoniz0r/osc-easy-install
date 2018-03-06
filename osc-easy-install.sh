@@ -3,18 +3,19 @@
 # Author: simonizor
 # License: MIT
 # Description: A simple script that finds packages on the openSUSE Build Service based on user input
-# Dependencies: osc, zenity or qarma, ssh-askpass, xterm, zypper, rpm
+# Dependencies: osc, zenity or qarma, xterm, zypper, rpm
+
+RUNNING_LOC="$(readlink -f $0)"
+RUNNING_DIR="$(dirname $RUNNING_LOC)"
 
 for arg in $@; do
     case $arg in
         --debug)
-            set -v
             set -x
             shift
             ;;
     esac
 done
-
 
 # Check for necessary dependencies
 # Also check whether qarma is installed because behavior is a little different than zenity
@@ -128,7 +129,7 @@ if [ ! -f "/tmp/zenobshresults" ]; then
         (sleep 1 && wmctrl -F -a "osc-easy-install" -b add,above) &
     fi
     zenity --error --icon-name="$ICON_NAME" --title="osc-easy-install" --text="<b>$PACKAGE_NAME</b> not found!"
-    $0
+    "$RUNNING_LOC"
     exit 0
 # Else allow user to select Project name from list of valid results
 else
@@ -140,7 +141,7 @@ else
     --window-icon="$ICON_NAME" --column="Project/Release/Package" $(cat /tmp/zenobshresults))"
     if [ -z "$PROJECT_NAME" ]; then
         rm -f /tmp/zenobshresults
-        $0 
+        "$RUNNING_LOC"
         exit 0
     fi
     # echo "$(cat /tmp/zenobshresults | sed 's%/ %/%g;s% %\n%g')" > /tmp/zenobshresults
@@ -154,7 +155,7 @@ fi
 # Check if repo already is in zypper's list
 if rpm -qa | grep -qm1 "$BINARY_VERSION"; then
     zenity --error --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="<b>$BINARY_VERSION</b> is already installed!$(echo $NEW_LINE)Please remove <b>$BINARY_VERSION</b> before attempting to install it!"
-    $0
+    "$RUNNING_LOC"
     exit 0
 fi
 if ! zypper lr -U | grep -qm1 "$REPO_URL"; then
@@ -171,7 +172,7 @@ fi
 # Exit if cancel
 case $? in
     1)
-        $0 
+        "$RUNNING_LOC"
         exit 0
         ;;
     0)
@@ -193,7 +194,7 @@ case $? in
             REPO_ALIAS="$(zypper -x lr | grep -m1 -A1 "$REPO_URL" | head -n 1 | cut -f2 -d'"')"
             if [ -z "$REPO_ALIAS" ]; then
                 zenity --error --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="Failed to add <b>$REPO_URL</b> and install <b>$BINARY_VERSION</b>!"
-                $0 
+                "$RUNNING_LOC"
                 exit 0
             fi
             zenity --question --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" \
@@ -203,13 +204,13 @@ case $? in
             case $? in
                 0)
                     zenity --info --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="<b>$REPO_URL</b> will remain in zypper's list."
-                    $0 
+                    "$RUNNING_LOC"
                     exit 0
                     ;;
                 1)
-                    SUDO_ASKPASS="$(which ssh-askpass)" sudo -A zypper rr "$REPO_ALIAS" || { zenity --error --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="<b>$REPO_URL</b> was not removed."; $0 ; exit 0; }
+                    SUDO_ASKPASS="$RUNNING_DIR/osc-easy-install-askpass" sudo -A zypper rr "$REPO_ALIAS" || { zenity --error --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="<b>$REPO_URL</b> was not removed."; "$RUNNING_LOC"; exit 0; }
                     zenity --info --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="<b>$REPO_URL</b> was removed!"
-                    $0 
+                    "$RUNNING_LOC"
                     exit 0
                     ;;
             esac
@@ -220,7 +221,7 @@ case $? in
             REPO_ALIAS="$(zypper -x lr | grep -m1 -A1 "$REPO_URL" | head -n 1 | cut -f2 -d'"')"
             if [ -z "$REPO_ALIAS" ]; then
                 zenity --error --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="Failed to add <b>$REPO_URL</b> and install <b>$BINARY_VERSION</b>!"
-                $0 
+                "$RUNNING_LOC"
                 exit 0
             fi
             zenity --question --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" \
@@ -230,13 +231,13 @@ case $? in
             case $? in
                 0)
                     zenity --info --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="<b>$REPO_URL</b> will remain in zypper's list."
-                    $0 
+                    "$RUNNING_LOC"
                     exit 0
                     ;;
                 1)
-                    SUDO_ASKPASS="$(which ssh-askpass)" sudo -A zypper rr "$REPO_ALIAS" || { zenity --error --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="<b>$REPO_URL</b> was not removed."; $0 ; exit 0; }
+                    SUDO_ASKPASS="$RUNNING_DIR/osc-easy-install-askpass" sudo -A zypper rr "$REPO_ALIAS" || { zenity --error --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="<b>$REPO_URL</b> was not removed."; "$RUNNING_LOC"; exit 0; }
                     zenity --info --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="<b>$REPO_URL</b> was removed!"
-                    $0 
+                    "$RUNNING_LOC"
                     exit 0
                     ;;
             esac

@@ -11,7 +11,7 @@ The dependencies for osc-easy-install are pretty light.  Most things required sh
 Dependencies:
 
 ```
-osc, zenity (or qarma, a zenity replacement), ssh-askpass, xterm, zypper, rpm
+osc, zenity (or qarma, a zenity replacement), xterm, zypper, rpm
 ```
 
 # Installation/Removal
