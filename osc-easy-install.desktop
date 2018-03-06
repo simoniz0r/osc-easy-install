@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=osc-easy-install
+GenericName=osc-easy-install
+Comment=Search for and install packages from the openSUSE Build Service repos
+Exec=osc-easy-install
+Categories=Utility;
+Icon=suse
+StartupNotify=false
