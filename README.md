@@ -1,8 +1,8 @@
 # osc-easy-install
 
-osc-easy-install is a simple script that uses `zenity` to provide a GUI frontend to search for packages using the `osc` package on openSUSE.  The goal is to provide similar functionality as the "1 Click Install" from https://software.opensuse.org/search without needing to rely on using that website (it can be a little slow and goes down just a tad too frequently).
+osc-easy-install is a simple script that uses `zenity` to provide a GUI frontend to search for packages using the `osc` package on openSUSE.  The goal is to provide similar functionality as the "1 Click Install" from https://software.opensuse.org/search without needing to rely on using that website.
 
-osc-easy-install should provide the same search results as the openSUSE Software site.  The `osc` package is used to get information about available packages from the openSUSE Build Service.  Getting search results using `osc` is usually a little faster than using the Software site, and it also works when the Software site is down.
+osc-easy-install should provide the same search results as the openSUSE Software site.  The `osc` package is used to get information about available packages from the openSUSE Build Service.  Getting search results using `osc` is usually a little faster than loading up the Software site.
 
 # Dependencies
 
