@@ -33,10 +33,6 @@ if ! type osc >/dev/null 2>&1; then
     MISSING_DEPS="TRUE"
     echo "osc not installed!"
 fi
-if ! type ssh-askpass >/dev/null 2>&1; then
-    MISSING_DEPS="TRUE"
-    echo "ssh-askpass not installed!"
-fi
 if ! type xterm >/dev/null 2>&1; then
     MISSING_DEPS="TRUE"
     echo "xterm not installed!"
