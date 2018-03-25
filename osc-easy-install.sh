@@ -178,7 +178,7 @@ case $? in
         HALF_WIDTH=$(echo $CURRENT_WIDTH | awk '{print $1 * .40}')
         HALF_HEIGHT=$(echo $CURRENT_HEIGHT | awk '{print $1 * .40}')
         if ! zypper lr -U | grep -qm1 "$REPO_URL"; then
-            xterm -geometry 90x30+${HALF_WIDTH}+${HALF_HEIGHT} -e "sudo zypper addrepo https://download.opensuse.org/repositories/${PROJECT_NAME}/${SUSE_RELEASE}/${PROJECT_NAME}.repo && sudo zypper refresh && sudo zypper install $BINARY_VERSION"
+            xterm -geometry 90x30+${HALF_WIDTH}+${HALF_HEIGHT} -e "sudo zypper addrepo -f https://download.opensuse.org/repositories/${PROJECT_NAME}/${SUSE_RELEASE}/${PROJECT_NAME}.repo && sudo zypper refresh && sudo zypper install $BINARY_VERSION"
         else
             xterm -geometry 90x30+${HALF_WIDTH}+${HALF_HEIGHT} -e "sudo zypper refresh && sudo zypper install $BINARY_VERSION"
         fi
