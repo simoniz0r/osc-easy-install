@@ -64,7 +64,8 @@ if type wmctrl >/dev/null 2>&1; then
     (sleep 1 && wmctrl -F -a "osc-easy-install" -b add,above) &
 fi
 SEARCH_INPUT="$(zenity --forms --separator="," --title="osc-easy-install" --text="Find and install packages from the openSUSE Build Service$(echo $NEW_LINE)" \
---window-icon="$ICON_NAME" --ok-label="Search" --add-entry="Package:" --add-combo="Release:" \
+--window-icon="$ICON_NAME" --ok-label="Search" --add-entry="Package:" --add-combo="Search Type:" \
+--combo-values="Exact Match|Partial Match" --add-combo="Release:" \
 --combo-values="openSUSE_Tumbleweed|openSUSE_Factory|openSUSE_Leap_15.0|openSUSE_Leap_42.3|All")"
 # Exit on cancel
 case $? in
@@ -74,9 +75,10 @@ case $? in
 esac
 # Set variables using separator set above and cut
 PACKAGE_NAME="$(echo $SEARCH_INPUT | cut -f1 -d',')"
+SEARCH_TYPE="$(echo $SEARCH_INPUT | cut -f2 -d',')"
 # Set default SUSE_RELEASE in case user doesn't select it when using zenity
-if [ ! -z "$(echo $SEARCH_INPUT | cut -f2 -d',')" ]; then
-    SUSE_RELEASE="$(echo $SEARCH_INPUT | cut -f2 -d',')"
+if [ ! -z "$(echo $SEARCH_INPUT | cut -f3 -d',')" ]; then
+    SUSE_RELEASE="$(echo $SEARCH_INPUT | cut -f3 -d',')"
 fi
 if [ "$SUSE_RELEASE" = "All" ]; then
     unset SUSE_RELEASE
@@ -91,26 +93,16 @@ zenity --info --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name=
 --text="Searching openSUSE Build Service$(echo $NEW_LINE)Package: <b>$PACKAGE_NAME</b>$(echo $NEW_LINE)Release: <b>$SUSE_RELEASE</b>$(echo $NEW_LINE)This may take a moment..." &
 PID_OF_SEARCHBOX="$!"
 rm -f /tmp/oeisearchcache
-# Run a for loop on osc se to put projects and packages in correct order and eliminate duplicate projects
+# use case to run selected SEARCH_TYPE
 touch /tmp/oeisearchcache
-osc se -s --csv --binary "$PACKAGE_NAME" | tr '|' '\n' | grep '.rpm' | grep "$SUSE_RELEASE" | grep "$(uname -m)\|noarch" | grep -v 'src.rpm' | rev | cut -f2- -d'-' | rev > /tmp/oeisearchcache 2>&1
-# for search_result in $(cat /tmp/oeisearchcache); do
-#     PROJECT_NAME="$(echo $search_result | cut -f1 -d'|')"
-#     BINARY_VERSION="$(echo $search_result | cut -f3 -d'|' | rev | cut -f1 -d'/' | rev)"
-#     RELEASE_REPO="$(echo $search_result | cut -f3 -d'|' | rev | cut -f3 -d'/' | rev)"
-#     if [[ "$PROJECT_NAME" =~ "rpm" ]]; then
-#         PROJECT_NAME="$(echo $search_result | cut -f2 -d'|')"
-#         BINARY_VERSION="$(echo $search_result | cut -f1 -d'|' | rev | cut -f1 -d'/' | rev)"
-#         RELEASE_REPO="$(echo $search_result | cut -f1 -d'|' | rev | cut -f3 -d'/' | rev)"
-#     fi
-#     if [[ ! "$BINARY_VERSION" =~ ".rpm" ]]; then
-#         PROJECT_NAME="$(echo $search_result | cut -f3 -d'|')"
-#         BINARY_VERSION="$(echo $search_result | cut -f2 -d'|' | rev | cut -f1 -d'/' | rev)"
-#         RELEASE_REPO="$(echo $search_result | cut -f2 -d'|' | rev | cut -f3 -d'/' | rev)"
-#     fi
-#     BINARY_VERSION="$(echo $BINARY_VERSION | sed 's%.rpm%%g' | rev | cut -f2- -d'-' | rev)"
-#     echo "$PROJECT_NAME/$RELEASE_REPO/$BINARY_VERSION" >> /tmp/oeisearchcache
-# done
+case "$SEARCH_TYPE" in
+    Partial*)
+        osc se -s --csv --binary "$PACKAGE_NAME" | tr '|' '\n' | grep '.rpm' | grep "$SUSE_RELEASE" | grep "$(uname -m)\|noarch" | grep -v 'src.rpm' | rev | cut -f2- -d'-' | rev > /tmp/oeisearchcache 2>&1
+        ;;
+    *)
+        osc se --csv --binary "$PACKAGE_NAME" | tr '|' '\n' | grep '.rpm' | grep "$SUSE_RELEASE" | grep "$(uname -m)\|noarch" | grep -v 'src.rpm' | rev | cut -f2- -d'-' | rev > /tmp/oeisearchcache 2>&1
+        ;;
+esac
 if [ $(cat /tmp/oeisearchcache | wc -l) -eq 0 ]; then
     rm -f /tmp/oeisearchcache
 else
