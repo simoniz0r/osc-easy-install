@@ -9,10 +9,10 @@ install:
 		@mkdir -p $(DESTDIR)$(PREFIX)/share/applications
 
 		@echo 'Installing osc-easy-install...'
-		@chmod +x osc-easy-install.sh
-		@chmod +x osc-easy-install-askpass.sh
-		@cp -p osc-easy-install.sh $(DESTDIR)$(PREFIX)/bin/osc-easy-install
-		@cp -p osc-easy-install-askpass.sh $(DESTDIR)$(PREFIX)/bin/osc-easy-install-askpass
+		@chmod +x osc-easy-install
+		@chmod +x osc-easy-install-askpass
+		@cp -p osc-easy-install $(DESTDIR)$(PREFIX)/bin/osc-easy-install
+		@cp -p osc-easy-install-askpass $(DESTDIR)$(PREFIX)/bin/osc-easy-install-askpass
 		@cp -p osc-easy-install.desktop $(DESTDIR)$(PREFIX)/share/applications/osc-easy-install.desktop
 		@echo 'osc-easy-install installed!'
 
