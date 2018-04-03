@@ -93,6 +93,7 @@ zenity --info --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name=
 --text="Searching openSUSE Build Service$(echo $NEW_LINE)Package: <b>$PACKAGE_NAME</b>$(echo $NEW_LINE)Release: <b>$SUSE_RELEASE</b>$(echo $NEW_LINE)This may take a moment..." &
 PID_OF_SEARCHBOX="$!"
 rm -f /tmp/oeisearchcache
+rm -f /tmp/oeisearchresults
 # use case to run selected SEARCH_TYPE
 touch /tmp/oeisearchcache
 case "$SEARCH_TYPE" in
@@ -106,13 +107,21 @@ esac
 if [ $(cat /tmp/oeisearchcache | wc -l) -eq 0 ]; then
     rm -f /tmp/oeisearchcache
 else
-    echo # -e "$(cat /tmp/oeisearchcache | tr '\n' ' ')\n" > /tmp/oeisearchcache
+    LIST_NUM=1
+    for result in $(cat /tmp/oeisearchcache); do
+        LIST_BINARY_VERSION="$(echo $result | rev | cut -f1 -d'/' | rev)"
+        LIST_SUSE_RELEASE="$(echo $result | rev | cut -f2-3 -d'/' | rev)"
+        LIST_PROJECT_NAME="$(echo $result | rev | cut -f4- -d'/' | rev)"
+        echo -n "$LIST_NUM $LIST_BINARY_VERSION $LIST_PROJECT_NAME $LIST_SUSE_RELEASE " >> /tmp/oeisearchresults
+        LIST_NUM=$(($LIST_NUM+1))
+    done
+    echo "$(cat /tmp/oeisearchresults | rev | cut -f2- -d' ' | rev)" > /tmp/oeisearchresults
 fi
 # rm -f /tmp/oeisearchcache
 # Kill popup box
 kill -SIGTERM -f $PID_OF_SEARCHBOX
 # If no search results, error
-if [ ! -f "/tmp/oeisearchcache" ]; then
+if [ ! -f "/tmp/oeisearchresults" ]; then
     if type wmctrl >/dev/null 2>&1; then
         (sleep 1 && wmctrl -F -a "osc-easy-install" -b add,above) &
     fi
@@ -124,22 +133,24 @@ else
     if type wmctrl >/dev/null 2>&1; then
         (sleep 1 && wmctrl -F -a "osc-easy-install" -b add,above) &
     fi
-    PROJECT_NAME="$(zenity --list --width=800 --height=600 --separator="," --title="osc-easy-install" --text="openSUSE Build Service search results for <b>$PACKAGE_NAME</b>.$(echo $NEW_LINE)\
-    Select a Project/Release/Package to add to zyper's repo list and install:" \
-    --window-icon="$ICON_NAME" --column="Project/Release/Package" $(cat /tmp/oeisearchcache))"
-    if [ -z "$PROJECT_NAME" ]; then
+    SELECTION_NUMBER="$(zenity --list --width=800 --height=600 --separator="," --title="osc-easy-install" --text="openSUSE Build Service search results for <b>$PACKAGE_NAME</b>.$(echo $NEW_LINE)\
+    Select a result to add the repository to zypper's repo list and install the package:" \
+    --window-icon="$ICON_NAME" --hide-column=1 --column="Number" --column="Package" --column="Project" --column="Release" $(cat /tmp/oeisearchresults))"
+    if [ -z "$SELECTION_NUMBER" ]; then
         rm -f /tmp/oeisearchcache
+        rm -f /tmp/oeisearchresults
         "$RUNNING_LOC"
         exit 0
     fi
-    # echo "$(cat /tmp/oeisearchcache | sed 's%/ %/%g;s% %\n%g')" > /tmp/oeisearchcache
-    # BINARY_VERSION="$(grep -wm1 "^$PROJECT_NAME" /tmp/oeisearchcache | cut -f2 -d'/')"
+    echo "$SELECTION_NUMBER"
+    PROJECT_NAME="$(sed -n ${SELECTION_NUMBER}p /tmp/oeisearchcache)"
     BINARY_VERSION="$(echo $PROJECT_NAME | rev | cut -f1 -d'/' | rev)"
     SUSE_RELEASE="$(echo $PROJECT_NAME | rev | cut -f3 -d'/' | rev)"
     PROJECT_REPO="$(echo $PROJECT_NAME | rev | cut -f3- -d'/' | rev)"
     PROJECT_NAME="$(echo $PROJECT_NAME | rev | cut -f4- -d'/' | rev | tr -d '/')"
     REPO_URL="http://download.opensuse.org/repositories/$PROJECT_REPO/"
     rm -f /tmp/oeisearchcache
+    rm -f /tmp/oeisearchresults
 fi
 # Check if repo already is in zypper's list
 if rpm -qa | grep -qm1 "$BINARY_VERSION"; then
