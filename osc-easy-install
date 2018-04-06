@@ -3,7 +3,7 @@
 # Author: simonizor
 # License: MIT
 # Description: A simple script that finds packages on the openSUSE Build Service based on user input
-# Dependencies: osc, zenity or qarma, xterm, zypper, rpm
+# Dependencies: osc, zenity or qarma, xterm, zypper, rpm, xdg-su
 
 RUNNING_LOC="$(readlink -f $0)"
 RUNNING_DIR="$(dirname $RUNNING_LOC)"
@@ -209,7 +209,7 @@ case $? in
                     exit 0
                     ;;
                 1)
-                    SUDO_ASKPASS="$RUNNING_DIR/osc-easy-install-askpass" sudo -A zypper rr "$REPO_ALIAS" || { zenity --error --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="<b>$REPO_URL</b> was not removed."; "$RUNNING_LOC"; exit 0; }
+                    xdg-su -c "zypper rr $REPO_ALIAS" || { zenity --error --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="<b>$REPO_URL</b> was not removed."; "$RUNNING_LOC"; exit 0; }
                     zenity --info --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="<b>$REPO_URL</b> was removed!"
                     "$RUNNING_LOC"
                     exit 0
@@ -236,7 +236,7 @@ case $? in
                     exit 0
                     ;;
                 1)
-                    SUDO_ASKPASS="$RUNNING_DIR/osc-easy-install-askpass" sudo -A zypper rr "$REPO_ALIAS" || { zenity --error --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="<b>$REPO_URL</b> was not removed."; "$RUNNING_LOC"; exit 0; }
+                    xdg-su -c "zypper rr $REPO_ALIAS" || { zenity --error --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="<b>$REPO_URL</b> was not removed."; "$RUNNING_LOC"; exit 0; }
                     zenity --info --title="osc-easy-install" --window-icon="$ICON_NAME" --icon-name="$ICON_NAME" --text="<b>$REPO_URL</b> was removed!"
                     "$RUNNING_LOC"
                     exit 0
